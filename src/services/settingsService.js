@@ -1,33 +1,28 @@
-// src/services/settingsService.js
-import { formatDate, createDate } from "@/utils/date";
-
-const KEY_DATE = "datum";
-const KEY_CUSTOMER = "customerId";
-
+// src/services/settingsService.ts
+import { parseDate, formatDate } from '@/utils/date';
+const KEY_DATE = 'datum';
+const KEY_CUSTOMER = 'customerId';
 export const settingsService = {
     getDate() {
-        return window.localStorage.getItem(KEY_DATE) || null;
+        const d = window.localStorage.getItem(KEY_DATE);
+        return d ?? null;
     },
-
     setDate(d) {
         // erwartet String im Format yyyy-mm-dd
-        window.localStorage.setItem(KEY_DATE, d);
+        // optional Validierung mit parseDate, wenn du willst:
+        const iso = d.includes('.') ? parseDate(d) : d;
+        window.localStorage.setItem(KEY_DATE, iso);
     },
-
     getToday() {
-        const d = new Date();
-        // hier kannst du parseDate/formatDate nutzen
-        const yyyy = d.getFullYear();
-        const mm = String(d.getMonth() + 1).padStart(2, "0");
-        const dd = String(d.getDate()).padStart(2, "0");
-        return `${yyyy}-${mm}-${dd}`;
+        const today = new Date();
+        // nutzt deine Util-Funktion
+        // wenn du lieber yyyy-mm-dd willst → direkt selbst bauen
+        return formatDate(today);
     },
-
     getCustomerID() {
-        return window.localStorage.getItem(KEY_CUSTOMER) || "";
+        return window.localStorage.getItem(KEY_CUSTOMER) ?? '';
     },
-
     setCustomerID(id) {
         window.localStorage.setItem(KEY_CUSTOMER, id);
-    }
+    },
 };

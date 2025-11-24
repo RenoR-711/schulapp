@@ -1,116 +1,258 @@
 <template>
-    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4" @click.self="emitCancel">
-        <div class="w-full max-w-md rounded-2xl bg-white p-5 shadow-xl">
-            <h2 class="mb-3 text-base font-semibold text-slate-900">
-                Menüwahl bestätigen
-            </h2>
+	<div class="dialog-backdrop" @click.self="$emit('cancel')">
 
-            <!-- Menü Info -->
-            <div class="mb-3 flex items-start gap-3">
-                <img :src="localMenueImage" class="h-12 w-12 flex-shrink-0 rounded-md object-cover" alt="Menü" />
-                <div class="prose prose-sm max-w-none">
-                    <span v-html="localMenue.menue_text"></span>
-                </div>
-            </div>
+		<div
+			class="dialog-box elegant-card"
+			:style="{
+				top: anchorY + 20 + 'px'
+			}"
+		>
 
-            <!-- Allergien -->
-            <div v-if="localMenue.allergie_konflikte && localMenue.allergie_konflikte.length > 0"
-                class="mb-3 rounded-lg bg-amber-50 p-3 text-xs text-amber-900">
-                <p class="font-semibold">Achtung: Allergie-Konflikte</p>
-                <p class="mt-1">
-                    <span v-for="(allergie, idx) in localMenue.allergie_konflikte" :key="idx">
-                        {{ allergie.name }} ({{ allergie.kurzname }})<span
-                            v-if="idx < localMenue.allergie_konflikte.length - 1">, </span>
-                    </span>
-                </p>
-            </div>
+			<!-- 🔥 ABMELDEN-MODUS -->
+			<div v-if="mode === 'abmelden'" class="content-wrap">
 
-            <!-- Ersatzkomponenten -->
-            <div v-if="localMenue.ersatzkomponenten && localMenue.ersatzkomponenten.length > 0" class="mb-3 text-xs">
-                <p class="mb-1 font-medium text-slate-800">Ersatzkomponenten:</p>
-                <label v-for="(ersatz, idx) in localMenue.ersatzkomponenten" :key="ersatz.speise_id"
-                    class="mb-1 flex items-center gap-2">
-                    <input class="h-4 w-4 accent-sky-600" type="checkbox"
-                        v-model="localMenue.ersatzkomponenten[idx].ausgewaehlt" />
-                    <span>{{ ersatz.bezeichnung }}</span>
-                </label>
-            </div>
+				<div class="title danger">
+					Vom Essen abmelden?
+				</div>
 
-            <!-- Nachricht -->
-            <textarea v-if="nachrichtSekretariat === 1" v-model="localNachricht"
-                class="mb-3 h-20 w-full rounded-xl border border-slate-200 bg-slate-50 p-2 text-xs outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-200"
-                placeholder="Wichtige Nachricht an das Sekretariat?"></textarea>
+				<p class="subtitle">
+					Möchten Sie für diesen Tag keine Mahlzeit einnehmen?
+				</p>
 
-            <!-- Ergebnis -->
-            <p v-if="postResult" class="mb-3 text-xs font-medium text-sky-700">
-                {{ postResult }}
-            </p>
+				<button class="btn btn-danger mt-4" @click="$emit('ok')">
+					Abmelden
+				</button>
 
-            <!-- Buttons -->
-            <div class="flex justify-end gap-2">
-                <button type="button"
-                    class="rounded-xl border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
-                    @click="emitCancel">
-                    Abbrechen
-                </button>
-                <button type="button"
-                    class="rounded-xl bg-sky-600 px-4 py-1.5 text-xs font-semibold text-white hover:bg-sky-700"
-                    @click="emitOk">
-                    OK
-                </button>
-            </div>
-        </div>
-    </div>
+				<button class="btn btn-ghost mt-2" @click="$emit('cancel')">
+					Abbrechen
+				</button>
+			</div>
+
+			<!-- 🔥 MENÜ-MODUS -->
+			<div v-if="mode === 'menue'" class="content-wrap">
+
+				<!-- Bild -->
+				<div class="img-wrap">
+					<img :src="menueImage" class="dish-image" alt=""/>
+				</div>
+
+				<!-- Text -->
+				<div class="title">
+					<span v-html="menue?.menue_text"></span>
+				</div>
+
+				<!-- Allergie -->
+				<div
+					v-if="menue?.allergie_konflikte?.length"
+					class="alert alert-warning"
+				>
+					⚠ Allergiehinweise beachten
+				</div>
+
+				<!-- Preis -->
+				<div v-if="menue?.preis > 0" class="price">
+					{{ formatPreis(menue.preis) }}
+				</div>
+
+				<p v-if="nachrichtSekretariat" class="note">
+					{{ nachrichtSekretariat }}
+				</p>
+
+				<button class="btn btn-primary mt-3" @click="$emit('ok')">
+					Menü wählen
+				</button>
+
+				<button class="btn btn-ghost mt-2" @click="$emit('cancel')">
+					Abbrechen
+				</button>
+
+			</div>
+
+		</div>
+	</div>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
-
-/* Props */
 const props = defineProps({
-    menue: { type: Object, required: true },
-    menueImage: { type: String, required: true },
-    nachrichtSekretariat: { type: Number, default: 0 },
-    menueNachricht: { type: String, default: '' },
-    postResult: { type: String, default: '' }
+	menue: {
+		type: Object,
+		default: () => ({})
+	},
+	menueImage: String,
+	anchorY: Number,
+	anchorHeight: Number,
+	nachrichtSekretariat: String,
+	menueNachricht: String,
+	postResult: String,
+	mode: {
+		type: String,
+		default: "menue"
+	}
 });
 
-const emits = defineEmits(['ok', 'cancel']);
-
-/* Lokaler Zustand statt direktes Mutieren von Props */
-const localMenue = ref({});
-const localMenueImage = ref('');
-const localNachricht = ref('');
-
-/* Props → lokale States übernehmen */
-watch(
-    () => props.menue,
-    (newVal) => {
-        localMenue.value = JSON.parse(JSON.stringify(newVal || {}));
-    },
-    { immediate: true }
-);
-
-watch(
-    () => props.menueImage,
-    (newVal) => (localMenueImage.value = newVal),
-    { immediate: true }
-);
-
-watch(
-    () => props.menueNachricht,
-    (newVal) => (localNachricht.value = newVal),
-    { immediate: true }
-);
-
-/* Emit zurück geben statt Props mutieren */
-const emitOk = () => {
-    emits('ok', {
-        menue: localMenue.value,
-        menueNachricht: localNachricht.value,
-        ersatzkomponenten: localMenue.value.ersatzkomponenten || []
-    });
-};
-
-const emitCancel = () => emits('cancel');
+function formatPreis(v) {
+	return Number(v).toLocaleString("de-DE", {
+		style: "currency",
+		currency: "EUR"
+	});
+}
 </script>
+
+<style scoped>
+
+/* ------------------------------ */
+/* BACKDROP */
+/* ------------------------------ */
+.dialog-backdrop {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.25);
+	backdrop-filter: blur(6px);
+	display: flex;
+	justify-content: center;
+	z-index: 9999;
+	animation: fadeIn 0.2s ease-out;
+}
+
+/* ------------------------------ */
+/* BOX */
+/* ------------------------------ */
+.dialog-box {
+	position: absolute;
+	width: 92%;
+	max-width: 450px;
+	border-radius: 18px;
+	overflow: hidden;
+	animation: slideUp 0.25s ease-out;
+}
+
+.elegant-card {
+	background: rgba(255, 255, 255, 0.85);
+	backdrop-filter: blur(14px);
+	box-shadow:
+		0 8px 18px rgba(0, 0, 0, 0.18),
+		0 3px 8px rgba(0, 0, 0, 0.08);
+	border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.content-wrap {
+	padding: 20px 20px 26px;
+	text-align: center;
+}
+
+/* ------------------------------ */
+/* TYPO */
+/* ------------------------------ */
+.title {
+	font-size: 1.3rem;
+	font-weight: 700;
+	color: #1d1d1f;
+	margin-bottom: 6px;
+}
+.title.danger {
+	color: #c62828;
+}
+.subtitle {
+	font-size: 0.9rem;
+	color: #555;
+}
+
+.price {
+	font-size: 1.1rem;
+	color: #111;
+	font-weight: 600;
+	margin-bottom: 12px;
+}
+
+.note {
+	font-size: 0.8rem;
+	color: #666;
+	margin-top: 6px;
+}
+
+/* ------------------------------ */
+/* IMAGE */
+/* ------------------------------ */
+.img-wrap {
+	display: flex;
+	justify-content: center;
+	margin-bottom: 12px;
+}
+.dish-image {
+	width: 120px;
+	height: auto;
+	border-radius: 14px;
+	object-fit: cover;
+	box-shadow:
+		0 5px 12px rgba(0, 0, 0, 0.15),
+		0 0 0 4px rgba(255, 255, 255, 0.3);
+}
+
+/* ------------------------------ */
+/* ALERT */
+/* ------------------------------ */
+.alert {
+	padding: 6px 12px;
+	border-radius: 10px;
+	font-size: 0.8rem;
+	font-weight: 600;
+	margin: 10px auto;
+	max-width: 260px;
+}
+.alert-warning {
+	background: #fff4d6;
+	color: #a76500;
+	border: 1px solid #ffe3a3;
+}
+
+/* ------------------------------ */
+/* BUTTONS */
+/* ------------------------------ */
+.btn {
+	width: 100%;
+	padding: 12px 0;
+	border-radius: 12px;
+	font-size: 1rem;
+	transition: all 0.15s ease-out;
+}
+
+.btn-primary {
+	background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+	color: white;
+	font-weight: 600;
+}
+.btn-primary:active {
+	transform: scale(0.97);
+}
+
+.btn-danger {
+	background: linear-gradient(135deg, #ef5350, #d32f2f);
+	color: white;
+	font-weight: 600;
+}
+.btn-danger:active {
+	transform: scale(0.97);
+}
+
+.btn-ghost {
+	background: #f2f2f7;
+	color: #444;
+}
+.btn-ghost:active {
+	background: #e5e5ea;
+	transform: scale(0.97);
+}
+
+/* ------------------------------ */
+/* ANIMATIONS */
+/* ------------------------------ */
+@keyframes fadeIn {
+	from { opacity: 0; }
+	to { opacity: 1; }
+}
+
+@keyframes slideUp {
+	from { opacity: 0; transform: translateY(20px) scale(0.98); }
+	to { opacity: 1; transform: translateY(0) scale(1); }
+}
+</style>

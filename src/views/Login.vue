@@ -1,5 +1,5 @@
 <template>
-    <div class="page">
+    <div class="wrapper">
 
         <!-- HEADER -->
         <header class="header">
@@ -9,9 +9,9 @@
         <!-- CONTENT -->
         <main class="content">
 
-            <label class="form-row">
+            <label class="form-row ">
                 Teilnehmer-Nr.
-                <input type="text" v-model="username" placeholder="Username" />
+                <input type="text" v-model="username" placeholder="Username"/>
             </label>
 
             <label class="form-row">
@@ -44,9 +44,8 @@
         </main>
 
         <!-- FOOTER / NAVIGATION -->
-        <nav class="nav">
-            <button @click="login" class="nav-btn">Anmelden</button>
-        </nav>
+            <button @click="login" class="col-span-2 bg-red-100 text-red-700 ">Anmelden</button>
+
         <footer class="footer">
             <div></div>
         </footer>
@@ -59,6 +58,9 @@ import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { authService } from "../services/authService";
 
+/* Icons */
+import logoSrc from '@/assets/images/logo.png';
+
 const router = useRouter();
 
 const username = ref("");
@@ -66,8 +68,6 @@ const password = ref("");
 const showPassword = ref(false);
 const remember = ref(false);
 const error = ref("");
-
-const logoSrc = "/css/images/logo.png";   // dein Logo
 
 // Auto-Login wenn SessionKey existiert
 onMounted(() => {
@@ -89,12 +89,15 @@ onMounted(() => {
 async function login() {
     console.log("LOGIN CLICKED");
 
+    error.value = "";
+
+    // Prüfung bleibt bestehen
     if (!username.value || !password.value) {
         error.value = "Bitte Benutzername und Passwort eingeben.";
         return;
     }
 
-    // Fake-Login oder später echte API
+    // Login im AuthService
     const result = await authService.login({
         username: username.value,
         password: password.value
@@ -105,7 +108,7 @@ async function login() {
         return;
     }
 
-    // Remember me speichern
+    // Remember me speichern (nur Username)
     if (remember.value) {
         localStorage.setItem("rememberUser", username.value);
     } else {

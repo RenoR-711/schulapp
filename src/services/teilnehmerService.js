@@ -1,3 +1,4 @@
+// @ts-nocheck
 // src/services/teilnehmerService.js
 export const teilnehmerService = {
     async getProfile(success, error) {
@@ -10,15 +11,14 @@ export const teilnehmerService = {
                 }
             };
             success && success(data);
-        } catch (e) {
+        }
+        catch (e) {
             error && error(e);
         }
     },
-
     refresh() {
         // ggf. profil neu laden – TODO
     },
-
     clearProfileData() {
         // Profilcache leeren – TODO
     }

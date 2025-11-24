@@ -1,129 +1,129 @@
+<!-- Speiseplan.vue -->
 <template>
-    <div class="min-h-screen flex flex-col bg-slate-50 text-slate-900">
-        <header class="header ">
-            <button @click="goStart" class="back-btn">
-                Start...</button>       
-        <div>
-            <h1 class="text-lg font-semibold tracking-tight">Speiseplan</h1>
-            <div class="w-16 text-right text-xs text-slate-400">KW {{ kalendWeek }}</div>
-        </div>
- </header>
-        <!-- Inhalt -->
-        <main class="flex-1 overflow-y-auto px-3 pb-28 pt-4 content" v-touch:swipe.left="nextWoche"
-            v-touch:swipe.right="prevWoche">
+    <div class="wrapper">
+
+        <!-- HEADER -->
+        <header class="header">
+            <h1 class="text-3xl font-semibold tracking-tight text-slate-700">Speiseplan</h1>
+            <div class="w-16 text-right text-xs text-slate-400">
+                KW {{ kalendWeek }}
+            </div>
+        </header>
+
+        <!-- HAUPTINHALT -->
+        <main class="content">
+            <!-- LADEN -->
             <div v-if="!dataReady" class="flex h-full items-center justify-center">
-                <div class="rounded-2xl bg-white px-6 py-4 shadow-sm text-slate-500 text-sm">Speiseplan wird geladen …
+                <div class="rounded-2xl px-6 py-4 shadow-sm text-slate-500 text-sm">
+                    Speiseplan wird geladen…
                     <img src="/src/assets/images/ajax-loader.gif" alt="Ladeanimation">
                 </div>
             </div>
 
+            <!-- TAGE -->
             <div v-else>
-                <DayCard v-for="(tag, tagIdx) in kalend.tage" :key="tagIdx" :tag="tag" :tagIdx="tagIdx"
-                    :details="kalend.details[tagIdx]" :icons="icons" :ESSEN_ID="ESSEN_ID" :abotage="abotage"
-                    :abotageOld="abotageOld" :open="openDay === tagIdx" @toggle="toggleDay" @select-date="datumSelect"
-                    @select-menue="handleSelectMenue" @abo-change="aboChange" @kurs-details="kurseDetails"
-                    @vertretung="vertretungsplan" />
+                <DayCard v-for="(tag, tagIdx) in kalend.tage" :key="tagIdx" :id="`daycard-${tagIdx}`" :tag="tag"
+                    :tagIdx="tagIdx" :details="kalend.details[tagIdx]" :icons="icons" :ESSEN_ID="ESSEN_ID"
+                    :abotage="abotage" :abotageOld="abotageOld" :open="openDay === tagIdx" :is-first="tagIdx === 0"
+                    :is-last="tagIdx === kalend.tage.length - 1" @toggle="toggleDay" @select-menue="handleSelectMenue"
+                    @abo-change="aboChange" @kurs-details="kurseDetails" @vertretung="vertretungsplan" />
             </div>
 
-            <!-- Menü-Dialog -->
-            <MenueDialog v-if="showMenueDialog" :menue="selectedMenue.menue" :menueImage="selectedMenueImage"
+            <!-- MENÜDIALOG -->
+            <MenueDialog v-if="showMenueDialog" :anchorY="dialogAnchor" :anchorHeight="dialogAnchorHeight"
+                :menue="selectedMenue.menue" :menueImage="selectedMenueImage"
                 :nachrichtSekretariat="nachrichtSekretariat" :menueNachricht="selectedMenueNachricht"
-                :postResult="postResult" @cancel="menueCancel" @ok="menueOk" />
+                :postResult="postResult" :mode="selectedMenue.mode" @cancel="menueCancel" @ok="menueOk" />
 
             <!-- Abo Dialog -->
-            <div v-if="showAboDialog" class="fixed inset-0 z-40 flex items-center justify-center bg-black/40 px-4">
-                <div class="w-full max-w-sm rounded-2xl bg-white p-5 shadow-xl">
-                    <h2 class="mb-3 text-base font-semibold text-slate-900">Bitte bestätigen:</h2>
-                    <p class="mb-4 text-sm text-slate-800">{{ aboText }}</p>
-                    <div class="flex justify-end gap-2">
-                        <button @click="aboCancel"
-                            class="rounded-xl border border-slate-200 px-3 py-1.5 text-xs font-medium">Abbrechen</button>
-                        <button @click="aboOk"
-                            class="rounded-xl bg-sky-600 px-4 py-1.5 text-xs font-semibold text-white">OK</button>
-                    </div>
-                </div>
-            </div>
+            <AboDialog v-if="showAboDialog" :text="aboText" @ok="aboOk" @cancel="aboCancel" />
         </main>
 
-        <!-- Navigation -->
-        <nav
-            class="sticky bottom-0 inset-x-0 z-30 flex items-stretch justify-around border-t border-slate-200 bg-white/95 px-2 py-1.5 backdrop-blur">
-            <button @click="prevWoche"
-                class="flex flex-1 flex-col items-center justify-center gap-1 rounded-xl px-2 py-1 text-xs font-medium">
-                <img :src="icons.circleLeft" class="h-5 w-5" alt="Woche zurück" /> Woche - </button>
-            <button @click="aktWoche"
-                class="flex flex-1 flex-col items-center justify-center gap-1 rounded-xl px-2 py-1 text-xs font-semibold text-sky-700">
-                <img :src="icons.check" class="h-5 w-5" alt="Heute" /> Heute </button>
-            <button @click="nextWoche"
-                class="flex flex-1 flex-col items-center justify-center gap-1 rounded-xl px-2 py-1 text-xs font-medium">
-                <img :src="icons.circleRight" class="h-5 w-5" alt="Woche vor" /> Woche + </button>
+        <!-- NAVIGATION -->
+        <nav class="sticky bottom-0 inset-x-0 z-30 flex items-stretch justify-around bg-white/90  ">
+            <button @click="prevWoche" class="nav-btn">
+                <img :src="icons.circleLeft" class="h-5 w-5" alt="Woche zurück" />
+                Woche -
+            </button>
+            <button @click="aktWoche" class="nav-btn">
+                <img :src="icons.check" class="h-5 w-5" alt="Heute" />
+                Heute
+            </button>
+            <button @click="nextWoche" class="nav-btn">
+                <img :src="icons.circleRight" class="h-5 w-5" alt="Woche vor" />
+                Woche +
+            </button>
         </nav>
+
+        <footer class="footer">
+            <div></div>
+        </footer>
+
     </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import DayCard from '../components/DayCard.vue'
-import MenueDialog from '../components/MenueDialog.vue'
-import { kalenderService } from '../services/kalenderService'
-import { authService } from '../services/authService'
-import { teilnehmerService } from '../services/teilnehmerService'
-import { settingsService } from '../services/settingsService'
-import { createDate, formatDate } from '../utils/date'
-import { BASE_URL } from '../utils/config'
+import { ref, computed, onMounted, nextTick } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
+import DayCard from "@/components/DayCard.vue";
+import MenueDialog from "@/components/MenueDialog.vue";
+import AboDialog from '@/components/AboDialog.vue'
+
+import { kalenderService } from "@/services/kalenderService";
+import { authService } from "@/services/authService";
+import { teilnehmerService } from "@/services/teilnehmerService";
+import { settingsService } from "@/services/settingsService";
+
+import { createDate } from "@/utils/date";
+import { BASE_URL } from "@/utils/config";
 
 /* Icons */
-import iconApfelAbo from '../assets/images/apfel_abo.png'
-import iconKreuzAbo from '../assets/images/kreuz_abo.png'
-import iconSpoonColor from '../assets/images/icon_spoon_color.png'
-import iconSpoonGray from '../assets/images/icon_spoon_gray.png'
-import iconKurse from '../assets/images/kurse.png'
-import iconInfo from '../assets/images/info.png'
-import iconFerien from '../assets/images/ferien.png'
-import iconCircleLeft from '../assets/images/icon-circleleft.png'
-import iconCheck from '../assets/images/icon-check.png'
-import iconCircleRight from '../assets/images/icon-circleright.png'
-import defaultMenueImage from '../assets/images/essen.png'
+import iconApfelAbo from "@/assets/images/apfel_abo.png";
+import iconKreuzAbo from "@/assets/images/kreuz_abo.png";
+import iconSpoonColor from "@/assets/images/icon_spoon_color.png";
+import iconSpoonGray from "@/assets/images/icon_spoon_gray.png";
+import iconKurse from "@/assets/images/kurse.png";
+import iconInfo from "@/assets/images/info.png";
+import iconFerien from "@/assets/images/ferien.png";
+import iconCircleLeft from "@/assets/images/icon-circleleft.png";
+import iconCheck from "@/assets/images/icon-check.png";
+import iconCircleRight from "@/assets/images/icon-circleright.png";
+import defaultMenueImage from "@/assets/images/essen.png";
 
-const ESSEN_ID = '5946B518504DCEF79B6D74589C54D4D3'
+/* Konstanten */
+const ESSEN_ID = "5946B518504DCEF79B6D74589C54D4D3";
 
-const route = useRoute()
-const router = useRouter()
+const route = useRoute();
+const router = useRouter();
 
+/* States */
+const shift = ref(parseInt(route.params.shift || "0"));
+const kalend = ref({ tage: [], details: [] });
+const dataReady = ref(false);
 
-const shift = ref(parseInt(route.params.shift || '0'))
-const kalend = ref({ tage: [], details: [] })
-const dataReady = ref(false)
+const openDay = ref(null);
+const toggleDay = (i) => (openDay.value = openDay.value === i ? null : i);
 
-const openDay = ref(null)
-const toggleDay = (idx) => {
-    openDay.value = openDay.value === idx ? null : idx
-}
+/* Dialog */
+const dialogAnchor = ref(0);
+const dialogAnchorHeight = ref(0);
 
+const showMenueDialog = ref(false);
+const selectedMenue = ref({ menue: {} });
+const selectedMenueImage = ref(defaultMenueImage);
 
-const selectedMenue = ref({ menue: {} })
-const selectedMenueImage = ref(defaultMenueImage)
-const selectedMenueNachricht = ref('')
-const showMenueDialog = ref(false)
-const postResult = ref('')
+const selectedMenueNachricht = ref("");
+const postResult = ref("");
+const nachrichtSekretariat = ref("");
 
+/* Abo */
+const aboText = ref("");
+const abotage = ref([false, false, false, false, false]);
+const abotageOld = ref([false, false, false, false, false]);
+const showAboDialog = ref(false);
 
-const selectedDate = ref(settingsService.getDate() || settingsService.getToday())
-const aboText = ref('')
-const abotage = ref([false, false, false, false, false, false, false])
-const abotageOld = ref([false, false, false, false, false, false, false])
-
-
-const showAboDialog = ref(false)
-const nachrichtSekretariat = ref(0)
-
-
-const appUrl = BASE_URL
-const sessionKey = authService.sessionKey
-
-
+/* Icons Objekt */
 const icons = {
     apfelAbo: iconApfelAbo,
     kreuzAbo: iconKreuzAbo,
@@ -134,19 +134,18 @@ const icons = {
     ferien: iconFerien,
     circleLeft: iconCircleLeft,
     check: iconCheck,
-    circleRight: iconCircleRight
-}
+    circleRight: iconCircleRight,
+};
 
-/* KW Anzeige */
+/* Woche */
 const kalendWeek = computed(() => {
-    if (!kalend.value.tage.length) return ''
-    const dt = createDate(kalend.value.tage[0].datum)
-    const oneJan = new Date(dt.getFullYear(), 0, 1)
-    const days = Math.floor((dt - oneJan) / 86400000)
-    return Math.ceil((days + oneJan.getDay() + 1) / 7)
-})
+    if (!kalend.value.tage.length) return "";
+    const dt = createDate(kalend.value.tage[0].datum);
+    const oneJan = new Date(dt.getFullYear(), 0, 1);
+    const days = Math.floor((dt - oneJan) / 86400000);
+    return Math.ceil((days + oneJan.getDay() + 1) / 7);
+});
 
-// INIT
 const init = async () => {
     dataReady.value = false;
 
@@ -159,161 +158,275 @@ const init = async () => {
     await teilnehmerService.getProfile(
         (profile) => {
             const abotageValue = profile.teilnehmer.abotage || 0;
-            const flags = [];
-            for (let i = 0; i < 7; i++) {
-                flags[i] = (abotageValue & (1 << i)) !== 0;
-            }
+            const flags = Array.from({ length: 7 }, (_, i) =>
+                (abotageValue & (1 << i)) !== 0
+            );
             abotage.value = [...flags];
             abotageOld.value = [...flags];
         },
         () => router.push("/error")
     );
 
-    const w = parseInt(route.params.shift || "0", 10);
-    shift.value = w;
+    const week = parseInt(route.params.shift || "0");
+    shift.value = week;
 
-    const week = await kalenderService.getWoche(w);
-    kalend.value = week;
+    // 🔥 Service liefert Mo–So fertig sortiert
+    kalend.value = await kalenderService.getWoche(week);
 
     dataReady.value = true;
 };
 
-// Template-Helfer
-const formatDateLong = (d) => {
-    const dt = createDate(d);
-    return dt.toLocaleDateString("de-DE", {
-        weekday: "long",
-        month: "short",
-        day: "numeric",
-    });
-};
-
-const formatWeekday = (d) => {
-    const dt = createDate(d);
-    return dt.toLocaleDateString("de-DE", { weekday: "long" });
-};
-
-const isToday = (d) => {
-    const saved = settingsService.getDate();
-    const today = saved ? createDate(saved) : new Date();
-    return today.toDateString() === createDate(d).toDateString();
-};
-
-const isEmptyDay = (tag) =>
-    tag.angebote.length + tag.events.length === 0;
-
-const hasMenues = (tag) =>
-    tag.angebote.some((a) => a.detail_kostenart_id === ESSEN_ID);
-
-const hasCourses = (tag) =>
-    tag.angebote.some((a) => a.detail_kostenart_id !== ESSEN_ID);
-
-const hasEvents = (tag) =>
-    tag.events && tag.events.length > 0;
-
-const isAngemeldet = (tag) => {
-    for (const a of tag.angebote) {
-        if (a.detail_kostenart_id === ESSEN_ID && a.angemeldet === 1) {
-            return true;
-        }
-    }
-    return false;
-};
-
-const isAbotag = (idx) => abotageOld.value[idx];
-
-const isAbotageEnabled = (idx, detail) =>
-    detail.kostenarten && detail.kostenarten.length > 0;
-
-const getDetailTitle = (tagIdx, id) => {
-    const d = kalend.value.details?.[tagIdx];
-    if (!d) return "Details";
-    // ggf. an dein echtes Datenmodell anpassen:
-    return d.title || "Details";
-};
-
-// Navigation
-const prevWoche = () =>
-    router.push(`/kalenda/${shift.value - 1}`);
-const nextWoche = () =>
-    router.push(`/kalenda/${shift.value + 1}`);
-const aktWoche = () => router.push(`/kalenda/0`);
+/* Navigation */
+const prevWoche = () => router.push(`/speiseplan/${shift.value - 1}`);
+const nextWoche = () => router.push(`/speiseplan/${shift.value + 1}`);
+const aktWoche = () => router.push(`/speiseplan/0`);
 const goStart = () => router.push("/start");
 const vertretungsplan = () => router.push("/vertretungsplan");
-const kurseDetails = (id) =>
-    router.push(`/kursedetail/${id}`);
+const kurseDetails = (id) => router.push(`/kursedetail/${id}`);
 
-const datumSelect = (d) => {
-    selectedDate.value = d;
-    settingsService.setDate(d);
-};
-
-// Menü-Dialog
-const getImageSrc = (menue) => {
-    if (menue.bild_id) {
-        return `${appUrl}/img/cache/customer${settingsService.getCustomerID()}/${menue.bild_id}.jpg?sk=${sessionKey}`;
+/* Menü auswählen */
+const handleSelectMenue = async ({ tagIdx, detailIdx, angebotIdx, index }) => {
+    if (openDay.value !== tagIdx) {
+        openDay.value = tagIdx;
+        await nextTick();
     }
-    return defaultMenueImage;
-};
 
-const selectMenue = (tagIdx, detailIdx, angebotIdx, index) => {
-    const menues =
-        kalend.value.details[tagIdx].detail_kostenarten[detailIdx]
-            .kostenarten[angebotIdx].menues;
-
-    if (index < menues.length) {
-        selectedMenue.value.menue = { ...menues[index] };
-        selectedMenueImage.value = getImageSrc(menues[index]);
+    const el = document.getElementById(`daycard-${tagIdx}`);
+    if (el) {
+        const r = el.getBoundingClientRect();
+        dialogAnchor.value = r.top + window.scrollY;
+        dialogAnchorHeight.value = r.height;
     } else {
-        selectedMenue.value.menue = { ...emptyMenue };
-        selectedMenueImage.value = defaultMenueImage;
+        dialogAnchor.value = window.innerHeight * 0.3;
+        dialogAnchorHeight.value = 200;
     }
 
-    const d = createDate(selectedDate.value);
-    selectedMenueDate.value = formatDate(d);
+    // 🔥 Sicheres Teilen
+    const detailBlock = kalend.value.details?.[tagIdx]?.detail_kostenarten?.[detailIdx];
+    const angebotBlock = detailBlock?.kostenarten?.[angebotIdx];
+
+    // 👉 Spezialfall: „Vom Essen abmelden“ (index = -1 oder menues.length)
+    if (index === -1 || index === angebotBlock?.menues?.length) {
+       selectedMenue.value = {menue: null, mode: "abmelden",tagIdx};
+        selectedMenueImage.value = defaultMenueImage;
+        showMenueDialog.value = true;
+        return;
+    }
+
+    // 👉 Normales Menü
+    const menue = angebotBlock?.menues?.[index];
+
+    // 👉 Falls Menü fehlt → NICHT crashen
+    if (!menue) {
+        console.warn("⚠️ Menü nicht gefunden", { tagIdx, detailIdx, angebotIdx, index });
+        return;
+    }
+
+    selectedMenue.value = {
+    menue: { ...menue },
+    mode: "menue",
+    tagIdx,
+    detailIdx,
+    angebotIdx,
+    index
+};
+
+
+    selectedMenueImage.value = menue.bild_id
+        ? `${BASE_URL}/img/cache/customer${settingsService.getCustomerID()}/${menue.bild_id}.jpg`
+        : defaultMenueImage;
 
     showMenueDialog.value = true;
-    postResult.value = "";
 };
 
-const menueCancel = () => {
-    showMenueDialog.value = false;
-};
-
+const menueCancel = () => (showMenueDialog.value = false);
 const menueOk = () => {
-    // TODO: hier dein ursprüngliches POST / Speichern implementieren
-    // postResult.value = 'Erfolgreich gespeichert.';
     showMenueDialog.value = false;
+
+    // --- Abmelden-Modus ---
+if (selectedMenue.value.mode === "abmelden") {
+    const tagIdx = selectedMenue.value.tagIdx;
+
+        // Alle Menüs des Tages abwählen
+    kalend.value.details[tagIdx]?.detail_kostenarten?.forEach(detail => {
+        detail.kostenarten?.forEach(angebot => {
+            angebot.menues?.forEach(m => {
+                m.ausgewaehlt = "0";
+            });
+        });
+    });
+
+    // DayCard zuklappen
+    openDay.value = null;
+
+    return;
+}
+
+    // --- Menü wählen ---
+    if (selectedMenue.value.mode === "menue") {
+
+        const { tagIdx, detailIdx, angebotIdx, index } = selectedMenue.value;
+
+        const kostenartenBlock =
+            kalend.value.details[tagIdx]
+                .detail_kostenarten[detailIdx]
+                .kostenarten[angebotIdx];
+
+        // zuerst alles abwählen
+        kostenartenBlock.menues.forEach(m => (m.ausgewaehlt = "0"));
+
+        // dann gewähltes Menü setzen
+        kostenartenBlock.menues[index].ausgewaehlt = "1";
+    }
 };
 
-// Abo-Dialog
-const aboChange = (idx) => {
-    const day = kalend.value.tage[idx];
-    const wd = formatWeekday(day.datum);
+/* Abo */
+const aboChange = ({ tagIdx, checked }) => {
+    const wd = createDate(kalend.value.tage[tagIdx].datum)
+        .toLocaleDateString("de-DE", { weekday: "long" });
 
-    if (abotage.value[idx]) {
-        aboText.value = `Hiermit melde ich mich jeden ${wd} dauerhaft verbindlich zum Essen an.`;
-    } else {
-        aboText.value = `Ich widerrufe die dauerhafte Anmeldung am ${wd}.`;
-    }
+    // checked = NEUER Zustand nach Klick
+    aboText.value = checked
+        ? `Hiermit melde ich mich jeden ${wd} dauerhaft verbindlich zum Essen an.`
+        : `Ich widerrufe die dauerhafte Anmeldung am ${wd}.`;
 
     showAboDialog.value = true;
 };
 
-const aboOk = () => {
-    showAboDialog.value = false;
-    // TODO: hier dein ursprüngliches Speichern der Abo-Einstellungen aufrufen
-};
-
+const aboOk = () => (showAboDialog.value = false);
 const aboCancel = () => {
-    // Änderungen zurückrollen
     abotage.value = [...abotageOld.value];
     showAboDialog.value = false;
 };
 
-// INIT
-onMounted(() => {
-    console.log("Speiseplan (Vue) geladen");
-    init();
-});
+onMounted(init);
 </script>
+<style scoped>
+
+/* --------------------------------------------- */
+/* PAGE BACKGROUND */
+/* --------------------------------------------- */
+.wrapper {
+    background: linear-gradient(180deg, #f8fafc 0%, #eef4fa 60%);
+    min-height: 100vh;
+}
+
+/* --------------------------------------------- */
+/* HEADER */
+/* --------------------------------------------- */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 18px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.08),
+        0 1px 4px rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+/* --------------------------------------------- */
+/* BACK BUTTON */
+/* --------------------------------------------- */
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: rgba(236, 244, 255, 0.7);
+    border-radius: 10px;
+    backdrop-filter: blur(4px);
+    color: #1e3a8a;
+    font-weight: 500;
+    border: 1px solid rgba(200, 220, 255, 0.6);
+    transition: all 0.2s ease;
+}
+
+.back-btn:active {
+    transform: scale(0.97);
+    background: rgba(226, 236, 255, 0.9);
+}
+
+/* --------------------------------------------- */
+/* NAVIGATION FOOTER */
+/* --------------------------------------------- */
+nav {
+    backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow:
+        0 -4px 12px rgba(0, 0, 0, 0.08),
+        0 -1px 4px rgba(0, 0, 0, 0.04);
+    padding: 6px 0;
+}
+
+.nav-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 6px 0;
+    font-size: 0.8rem;
+    color: #374151;
+    transition: all 0.15s ease;
+}
+
+.nav-btn:active {
+    transform: scale(0.96);
+    color: #1d4ed8;
+}
+
+/* --------------------------------------------- */
+/* CARD WRAPPER (DayCard Container) */
+/* --------------------------------------------- */
+#daycard {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(6px);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow:
+        0 6px 14px rgba(0, 0, 0, 0.12),
+        0 2px 6px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    margin-bottom: 12px;
+}
+
+/* --------------------------------------------- */
+/* LOADING BOX */
+/* --------------------------------------------- */
+.shadow-sm {
+    box-shadow:
+        0 6px 14px rgba(0, 0, 0, 0.10),
+        0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+/* --------------------------------------------- */
+/* ICON REFINEMENTS */
+/* --------------------------------------------- */
+.h-5.w-5 {
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.15));
+}
+
+/* --------------------------------------------- */
+/* EXPANDED AREA (Hintergrund der Details) */
+/* --------------------------------------------- */
+.bg-slate-50\/60 {
+    background: rgba(248, 250, 252, 0.7);
+    backdrop-filter: blur(4px);
+}
+
+/* --------------------------------------------- */
+/* TRANSITION */
+/* --------------------------------------------- */
+.expand-enter-active,
+.expand-leave-active {
+    transition: all 0.25s ease;
+}
+
+.expand-enter-from,
+.expand-leave-to {
+    opacity: 0;
+    transform: translateY(-6px);
+}
+</style>
