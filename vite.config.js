@@ -1,14 +1,32 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import path from 'node:path'
+import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
+import path from "node:path";
 
 export default defineConfig({
   plugins: [vue()],
+
   resolve: {
-    alias: { '@': path.resolve(__dirname, 'src') }
+    alias: {
+      "@": path.resolve(__dirname, "src"),
+    },
   },
+
+  build: {
+    sourcemap: false,
+    manifest: false,
+    outDir: "dist",
+    emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        assetFileNames: "assets/[name][extname]",
+        chunkFileNames: "assets/[name].js",
+        entryFileNames: "assets/[name].js"
+      }
+    }
+  },
+
   server: {
-    host: true,
-    port: 5173
-  },
-})
+    port: 5173,
+    strictPort: true
+  }
+});

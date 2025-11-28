@@ -1,7 +1,42 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+
+    /* WICHTIG: TS erzeugt KEINE Dateien (Vite baut später den dist!) */
+    "noEmit": true,
+
+    "useDefineForClassFields": true,
+    "strict": true,
+    "jsx": "preserve",
+    "isolatedModules": true,
+
+    "allowJs": true,
+    "checkJs": false,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+
+    "lib": ["ESNext", "DOM"],
+
+    "types": ["vite/client"],
+
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.vue",
+    "src/**/*.js"
+  ],
+
+  "exclude": [
+    "node_modules",
+    "dist"
   ]
 }

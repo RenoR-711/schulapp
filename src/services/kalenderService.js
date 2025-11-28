@@ -1,66 +1,90 @@
 // @ts-nocheck
 // src/services/kalenderService.js
-import config from '@/utils/config';
+import config from "@/utils/config";
+
 class KalenderService {
     constructor() {
-        this.started = false;
+        this._weekCache = new Map(); // shift -> Wochen-Daten
+        this._monthCache = new Map(); // "YYYY-MM" -> Monats-Daten
         this.needRefresh = true;
-        // Nachricht aus Backend
-        this.nachricht_sekretariat = "";
-        // AngularJS-artige Handler
-        this._tagSuccessHandlers = [];
-        this._detailSuccessHandlers = [];
-        this._tagErrorHandlers = [];
-        this._detailErrorHandlers = [];
-        // Cache wie früher (key = shift)
-        this._weekCache = new Map();
     }
-    // INIT 
-    init() {
-        this.started = true;
-        this.needRefresh = false;
-    }
-    // Registrieren
-    addTagSuccessHandler(cb) { this._tagSuccessHandlers.push(cb); }
-    addDetailSuccessHandler(cb) { this._detailSuccessHandlers.push(cb); }
-    addTagErrorHandler(cb) { this._tagErrorHandlers.push(cb); }
-    addDetailErrorHandler(cb) { this._detailErrorHandlers.push(cb); }
-    // Dispatcher
-    _dispatchTagSuccess() { this._tagSuccessHandlers.forEach(h => h()); }
-    _dispatchDetailSuccess() { this._detailSuccessHandlers.forEach(h => h()); }
-    _dispatchTagError(code) { this._tagErrorHandlers.forEach(h => h(code)); }
-    _dispatchDetailError(code) { this._detailErrorHandlers.forEach(h => h(code)); }
-    /**
-     * Demo-Woche generieren
-     */
+
+    /* -------------------- Woche laden -------------------- */
     async getWoche(shift = 0) {
-        // Cache nutzen
         if (!this.needRefresh && this._weekCache.has(shift)) {
             return this._weekCache.get(shift);
         }
 
-        // --- Montag bestimmen ---
+        try {
+            const res = await fetch(
+                `${config.BASE_URL}/kalender/woche?shift=${shift}`,
+                { credentials: "include" }
+            );
+
+            if (!res.ok) throw new Error(res.statusText);
+
+            const data = await res.json();
+            this._weekCache.set(shift, data);
+            this.needRefresh = false;
+            return data;
+        } catch (err) {
+            console.warn("API nicht erreichbar – Demo-Woche:", err);
+
+            const data = this._generateDemoWoche(shift);
+            this._weekCache.set(shift, data);
+            this.needRefresh = false;
+            return data;
+        }
+    }
+
+    /* -------------------- Monat laden -------------------- */
+    async getMonth(year, month) {
+        const key = `${year}-${String(month + 1).padStart(2, "0")}`;
+
+        if (!this.needRefresh && this._monthCache.has(key)) {
+            return this._monthCache.get(key);
+        }
+
+        try {
+            const res = await fetch(
+                `${config.BASE_URL}/kalender/monat?year=${year}&month=${month + 1}`,
+                { credentials: "include" }
+            );
+
+            if (!res.ok) throw new Error(res.statusText);
+
+            const data = await res.json();
+            this._monthCache.set(key, data);
+            this.needRefresh = false;
+            return data;
+        } catch (err) {
+            console.warn("API nicht erreichbar – Demo-Monat:", err);
+
+            const data = await this._generateDemoMonth(year, month);
+            this._monthCache.set(key, data);
+            this.needRefresh = false;
+            return data;
+        }
+    }
+
+    /* -------------------- Demo Woche -------------------- */
+    _generateDemoWoche(shift = 0) {
         const heute = new Date();
         const base = new Date(heute);
         base.setDate(heute.getDate() + shift * 7);
 
-        const wd = base.getDay();       // 0=So, 1=Mo
+        const wd = base.getDay(); // 0 = Sonntag
         const monday = new Date(base);
         monday.setDate(base.getDate() + (wd === 0 ? -6 : 1 - wd));
 
         const tage = [];
         const details = [];
 
-        this.nachricht_sekretariat = "Bitte melden Sie Allergien rechtzeitig im Sekretariat.";
-
-        // --- Mo–So erzeugen ---
         for (let i = 0; i < 7; i++) {
             const d = new Date(monday);
             d.setDate(monday.getDate() + i);
-
             const datumStr = d.toISOString().split("T")[0];
 
-            // TAG
             tage.push({
                 datum: datumStr,
                 angebote: [
@@ -76,7 +100,7 @@ class KalenderService {
                                 menge_verfuegbar: 5,
                                 allergie_konflikte: [],
                                 ersatzkomponenten: [],
-                                zusatzstoffe: []
+                                zusatzstoffe: [],
                             },
                             {
                                 menue_nr: 2,
@@ -86,28 +110,33 @@ class KalenderService {
                                 menge_verfuegbar: 3,
                                 allergie_konflikte: [],
                                 ersatzkomponenten: [],
-                                zusatzstoffe: []
-                            }
-                        ]
-                    }
+                                zusatzstoffe: [],
+                            },
+                        ],
+                    },
                 ],
-                events: i === 3 ? [
-                    {
-                        beschreibung: "Bastelnachmittag",
-                        datum_von: `${datumStr} 14:00`,
-                        showTime: true
-                    }
-                ] : [],
-                vertretungsplan: i === 2 ? [
-                    {
-                        datum: `${datumStr} 10:15`,
-                        bemerkung: "Herr Müller vertritt Frau Lange",
-                        vertretungsart: "Vertretung"
-                    }
-                ] : []
+                events:
+                    i === 3
+                        ? [
+                            {
+                                beschreibung: "Bastelnachmittag",
+                                datum_von: `${datumStr} 14:00`,
+                                showTime: true,
+                            },
+                        ]
+                        : [],
+                vertretungsplan:
+                    i === 2
+                        ? [
+                            {
+                                datum: `${datumStr} 10:15`,
+                                info: "Herr Müller vertritt Frau Lange",
+                                klasse: "Vertretung",
+                            },
+                        ]
+                        : [],
             });
 
-            // DETAILS
             details.push({
                 datum: datumStr,
                 detail_kostenarten: [
@@ -118,99 +147,45 @@ class KalenderService {
                                 kostenart_id: "KA-" + i,
                                 aenderbar: "1",
                                 pflicht: "0",
-                                menues: [
-                                    {
-                                        menue_nr: 1,
-                                        menue_text: "Schnitzel mit Pommes",
-                                        preis: 3.5,
-                                        ausgewaehlt: i === 0 ? "1" : "0",
-                                        menge_verfuegbar: 5,
-                                        allergie_konflikte: [],
-                                        ersatzkomponenten: [],
-                                        zusatzstoffe: []
-                                    },
-                                    {
-                                        menue_nr: 2,
-                                        menue_text: "Vegetarische Pasta",
-                                        preis: 4.2,
-                                        ausgewaehlt: "0",
-                                        menge_verfuegbar: 3,
-                                        allergie_konflikte: [],
-                                        ersatzkomponenten: [],
-                                        zusatzstoffe: []
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ]
+                                menues: tage[i].angebote[0].menues,
+                            },
+                        ],
+                    },
+                ],
             });
         }
 
-        const data = { tage, details };
-
-        this._weekCache.set(shift, data);
-        this.needRefresh = false;
-
-        this._dispatchTagSuccess();
-        this._dispatchDetailSuccess();
-
-        return data;
+        return { tage, details };
     }
 
-    /**
-     * Abo speichern
-     */
-    async saveAbo(aboBitmask, cb) {
-        try {
-            const res = await fetch(`${config.BASE_URL}/kalender/abo`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                credentials: "include",
-                body: JSON.stringify({ abotage: aboBitmask })
-            });
-            const data = await res.json();
-            if (res.status === 401) {
-                return cb({ fehler: -2, fehlermessage: "Session abgelaufen" });
-            }
-            cb(data);
+    /* -------------------- Demo Monat -------------------- */
+    async _generateDemoMonth(year, month) {
+        const firstOfMonth = new Date(year, month, 1);
+        const lastOfMonth = new Date(year, month + 1, 0);
+
+        const tage = [];
+        const details = [];
+
+        for (let d = firstOfMonth; d <= lastOfMonth; d.setDate(d.getDate() + 1)) {
+            const datumStr = new Date(d).toISOString().split("T")[0];
+            const wdata = this._generateDemoWoche(0);
+
+            const tag = wdata.tage.find((t) => t.datum === datumStr);
+            if (tag) tage.push(tag);
+
+            const detail = wdata.details.find((t) => t.datum === datumStr);
+            if (detail) details.push(detail);
         }
-        catch (err) {
-            cb({
-                fehler: -1,
-                fehlermessage: "Netzwerkfehler"
-            });
-        }
+
+        return { tage, details };
     }
-    /**
-     * Menü speichern
-     */
-    async saveMenue(auswahl, success, error) {
-        try {
-            const res = await fetch(`${config.BASE_URL}/kalender/menue`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                credentials: "include",
-                body: JSON.stringify(auswahl)
-            });
-            const data = await res.json();
-            if (res.status === 401) {
-                return error?.({
-                    fehler: -2,
-                    fehlermessage: "Session abgelaufen"
-                });
-            }
-            if (data.fehler && data.fehler !== 0) {
-                return error?.(data);
-            }
-            success(data);
-        }
-        catch (err) {
-            error?.({
-                fehler: -1,
-                fehlermessage: "Netzwerkfehler"
-            });
-        }
+
+    /* -------------------- Cache löschen -------------------- */
+    clearCaches() {
+        this._weekCache.clear();
+        this._monthCache.clear();
+        this.needRefresh = true;
     }
 }
+
 export const kalenderService = new KalenderService();

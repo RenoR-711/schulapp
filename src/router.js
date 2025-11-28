@@ -4,7 +4,6 @@ import { createRouter, createWebHashHistory } from "vue-router";
 import Login from "@/views/Login.vue";
 import Start from "@/views/Start.vue";
 import Profile from "@/views/Profile.vue";
-import Speiseplan from "@/views/Speiseplan.vue";
 import Kurse from "@/views/Kurse.vue";
 import Vertretungsplan from "@/views/Vertretungsplan.vue";
 import MainLayout from "@/layouts/MainLayout.vue";
@@ -56,14 +55,25 @@ const routes = [
                 }
             },
             {
+                path: "kalender",
+                name: "Kalender",
+                component: () => import("@/views/Kalender.vue"),
+                meta: {
+                    requiresAuth: true,
+                    title: "Kalender",
+                    showInProfile: true
+                }
+            },
+            {
                 // Speiseplan (Kalender) mit optionalen Parametern
                 path: "speiseplan/:shift?/:type?",
                 name: "Speiseplan",
-                component: Speiseplan,
+                component: () => import("@/views/Speiseplan.vue"),
                 meta: {
                     requiresAuth: true,
                     title: "Speiseplan",
-                    showInProfile: true
+                    showInProfile: true,
+                    hideGlobalNav: true 
                 }
             },
             {

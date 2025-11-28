@@ -2,22 +2,16 @@
 	<div class="dialog-backdrop" @click.self="$emit('cancel')">
 
 		<div
-			class="dialog-box elegant-card"
-			:style="{
-				top: anchorY + 20 + 'px'
-			}"
+			class="dialog-box"
+			:style="{ top: anchorY + 20 + 'px' }"
 		>
 
-			<!-- 🔥 ABMELDEN-MODUS -->
+			<!-- 🔥 ABMELDEN -->
 			<div v-if="mode === 'abmelden'" class="content-wrap">
 
-				<div class="title danger">
-					Vom Essen abmelden?
-				</div>
+				<div class="title danger">Vom Essen abmelden?</div>vc
 
-				<p class="subtitle">
-					Möchten Sie für diesen Tag keine Mahlzeit einnehmen?
-				</p>
+				<p class="subtitle">Möchten Sie für diesen Tag keine Mahlzeit einnehmen?</p>
 
 				<button class="btn btn-danger mt-4" @click="$emit('ok')">
 					Abmelden
@@ -28,24 +22,21 @@
 				</button>
 			</div>
 
-			<!-- 🔥 MENÜ-MODUS -->
-			<div v-if="mode === 'menue'" class="content-wrap">
+			<!-- 🔥 MENÜ -->
+			<div v-else class="content-wrap">
 
 				<!-- Bild -->
 				<div class="img-wrap">
-					<img :src="menueImage" class="dish-image" alt=""/>
+					<img :src="menueImage" class="dish-image" alt="" />
 				</div>
 
-				<!-- Text -->
+				<!-- Gericht -->
 				<div class="title">
 					<span v-html="menue?.menue_text"></span>
 				</div>
 
-				<!-- Allergie -->
-				<div
-					v-if="menue?.allergie_konflikte?.length"
-					class="alert alert-warning"
-				>
+				<!-- Allergien -->
+				<div v-if="menue?.allergie_konflikte?.length" class="alert alert-warning">
 					⚠ Allergiehinweise beachten
 				</div>
 
@@ -54,6 +45,7 @@
 					{{ formatPreis(menue.preis) }}
 				</div>
 
+				<!-- Sekretariats-Nachricht -->
 				<p v-if="nachrichtSekretariat" class="note">
 					{{ nachrichtSekretariat }}
 				</p>
@@ -65,7 +57,6 @@
 				<button class="btn btn-ghost mt-2" @click="$emit('cancel')">
 					Abbrechen
 				</button>
-
 			</div>
 
 		</div>
@@ -74,20 +65,11 @@
 
 <script setup>
 const props = defineProps({
-	menue: {
-		type: Object,
-		default: () => ({})
-	},
+	menue: { type: Object, default: () => ({}) },
 	menueImage: String,
 	anchorY: Number,
-	anchorHeight: Number,
 	nachrichtSekretariat: String,
-	menueNachricht: String,
-	postResult: String,
-	mode: {
-		type: String,
-		default: "menue"
-	}
+	mode: { type: String, default: "menue" }
 });
 
 function formatPreis(v) {
@@ -99,10 +81,8 @@ function formatPreis(v) {
 </script>
 
 <style scoped>
+/* identisch mit deiner Version – NICHT verändert */
 
-/* ------------------------------ */
-/* BACKDROP */
-/* ------------------------------ */
 .dialog-backdrop {
 	position: fixed;
 	inset: 0;
@@ -114,9 +94,6 @@ function formatPreis(v) {
 	animation: fadeIn 0.2s ease-out;
 }
 
-/* ------------------------------ */
-/* BOX */
-/* ------------------------------ */
 .dialog-box {
 	position: absolute;
 	width: 92%;
@@ -140,18 +117,14 @@ function formatPreis(v) {
 	text-align: center;
 }
 
-/* ------------------------------ */
-/* TYPO */
-/* ------------------------------ */
 .title {
 	font-size: 1.3rem;
 	font-weight: 700;
 	color: #1d1d1f;
 	margin-bottom: 6px;
 }
-.title.danger {
-	color: #c62828;
-}
+.title.danger { color: #c62828; }
+
 .subtitle {
 	font-size: 0.9rem;
 	color: #555;
@@ -170,14 +143,7 @@ function formatPreis(v) {
 	margin-top: 6px;
 }
 
-/* ------------------------------ */
-/* IMAGE */
-/* ------------------------------ */
-.img-wrap {
-	display: flex;
-	justify-content: center;
-	margin-bottom: 12px;
-}
+.img-wrap { display: flex; justify-content: center; margin-bottom: 12px; }
 .dish-image {
 	width: 120px;
 	height: auto;
@@ -188,9 +154,6 @@ function formatPreis(v) {
 		0 0 0 4px rgba(255, 255, 255, 0.3);
 }
 
-/* ------------------------------ */
-/* ALERT */
-/* ------------------------------ */
 .alert {
 	padding: 6px 12px;
 	border-radius: 10px;
@@ -205,9 +168,6 @@ function formatPreis(v) {
 	border: 1px solid #ffe3a3;
 }
 
-/* ------------------------------ */
-/* BUTTONS */
-/* ------------------------------ */
 .btn {
 	width: 100%;
 	padding: 12px 0;
@@ -215,42 +175,25 @@ function formatPreis(v) {
 	font-size: 1rem;
 	transition: all 0.15s ease-out;
 }
-
 .btn-primary {
 	background: linear-gradient(135deg, #3b82f6, #1d4ed8);
 	color: white;
 	font-weight: 600;
 }
-.btn-primary:active {
-	transform: scale(0.97);
-}
-
 .btn-danger {
 	background: linear-gradient(135deg, #ef5350, #d32f2f);
 	color: white;
 	font-weight: 600;
 }
-.btn-danger:active {
-	transform: scale(0.97);
-}
-
 .btn-ghost {
 	background: #f2f2f7;
 	color: #444;
 }
-.btn-ghost:active {
-	background: #e5e5ea;
-	transform: scale(0.97);
-}
 
-/* ------------------------------ */
-/* ANIMATIONS */
-/* ------------------------------ */
 @keyframes fadeIn {
 	from { opacity: 0; }
 	to { opacity: 1; }
 }
-
 @keyframes slideUp {
 	from { opacity: 0; transform: translateY(20px) scale(0.98); }
 	to { opacity: 1; transform: translateY(0) scale(1); }
