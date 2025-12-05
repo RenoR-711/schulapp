@@ -3,7 +3,7 @@
 ![License](https://img.shields.io/badge/License-MIT-blue)
 
 Mobile Schul-App zur Essensbestellung, Wochenplanung und Verwaltung.  
-Das Projekt kombiniert ein modernes **Vue-Frontend (Framework7 + Vite + Capacitor)** mit einem **Laravel-Backend** – alles in einem **Monorepo**.
+Das Projekt kombiniert ein modernes **Vue-Frontend (Vite + Capacitor)** mit einem **Laravel-Backend** – alles in einem **Monorepo**.
 
 > ⚠️ **Hinweis:**  
 > Dieses Projekt befindet sich noch in aktiver Entwicklung.  
@@ -43,7 +43,6 @@ Das Projekt kombiniert ein modernes **Vue-Frontend (Framework7 + Vite + Capacito
 
 ### 🔹 **Frontend**
 - Vue 3 (Composition API)
-- Framework7 v8
 - Vite
 - Capacitor 6 (Android & iOS)
 - TailwindCSS (optional)
@@ -54,4 +53,18 @@ Das Projekt kombiniert ein modernes **Vue-Frontend (Framework7 + Vite + Capacito
 - MySQL / MariaDB
 - REST API
 
-### 🔹 **Monorepo-Struktur**
+### 🔜 Roadmap
+
+    -Push-Benachrichtigungen
+    -PWA-Unterstützung
+    -Mehrsprachigkeit (DE/EN)
+    -Rollenverwaltung (Eltern / Lehrer / Admins)
+    -Export-Funktionen für die Verwaltung
+    -Barrierefreie UI
+
+### 📝 Entwicklungsstatus
+
+Dieses Projekt ist noch nicht fertig.
+Viele Bereiche der App werden aktiv überarbeitet, refaktoriert oder erweitert.
+
+Bleib dran – Updates folgen regelmäßig! 🚀
