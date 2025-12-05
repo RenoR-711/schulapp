@@ -1,4 +1,4 @@
-# ISS Menü Plan – Monorepo
+# schulapp Menü Plan – Monorepo
 
 Dieses Repository enthält:
 
@@ -25,7 +25,7 @@ cd frontend
 npx cap sync
 npx cap open android   # oder ios
 
-# ISS Menü Plan – Screenshot
+# schulapp Menü Plan – Screenshot
 
 ![Loginscreen](./frontend/screenshots/loginscreen.png)
 ![Startscreen](./frontend/screenshots/startscreen.png)
