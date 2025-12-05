@@ -27,10 +27,6 @@ npx cap open android   # oder ios
 
 # schulapp Menü Plan – Screenshot
 
-![Loginscreen](./frontend/screenshots/loginscreen.png)
-![Startscreen](./frontend/screenshots/startscreen.png)
-![Kalender](./frontend/screenshots/kalender.png)
-
 | Login-Screen der App                                               | Startscreen                                         |  Wochenplan mit Speiseübersicht                                              |
 | -------------------------------------------------------- | ------------------------------------------------------- | ---------------------------------------------------------- |
 | <img src="./frontend/screenshots/loginscreen.png" width="250"> | <img src="./frontend/screenshots/startscreen.png" width="250"> | <img src="./frontend/screenshots/kalender.png" width="250"> |
