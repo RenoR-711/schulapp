@@ -1,4 +1,4 @@
-# schulapp Menü Plan – Schul-App  
+# schulapp Menü Plan 
 ![Status](https://img.shields.io/badge/Status-In%20Entwicklung-yellow)
 ![License](https://img.shields.io/badge/License-MIT-blue)
 
