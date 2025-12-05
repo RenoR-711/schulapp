@@ -10,11 +10,6 @@ Das Projekt kombiniert ein modernes **Vue-Frontend (Vite + Capacitor)** mit eine
 Dieses Projekt wurde ursprünglich mit **Apache Cordova** entwickelt und ist derzeit in einer umfassenden Modernisierung.  
 Ziel ist es, die bestehende Schul-App technisch zu aktualisieren und in eine moderne Architektur zu überführen.
 
-Die aktuelle Version nutzt nun:
-- **Vue 3** und **Vite** für eine performante Web-App
-- **Capacitor** für moderne native Android/iOS Builds
-- **Laravel** als Backend mit einer strukturierten REST-API
-- eine **Monorepo-Struktur**, die Frontend und Backend sauber vereint
 
 ## Projektstatus
 
