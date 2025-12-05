@@ -31,6 +31,6 @@ npx cap open android   # oder ios
 ![Startscreen](./frontend/screenshots/startscreen.png)
 ![Kalender](./frontend/screenshots/kalender.png)
 
-| Startscreen                                              | Wochenübersicht                                         | Essensdetails                                              |
+| Login-Screen der App                                               | Startscreen                                         |  Wochenplan mit Speiseübersicht                                              |
 | -------------------------------------------------------- | ------------------------------------------------------- | ---------------------------------------------------------- |
-| <img src="./frontend/screenshots/start.png" width="250"> | <img src="./frontend/screenshots/week.png" width="250"> | <img src="./frontend/screenshots/details.png" width="250"> |
+| <img src="./frontend/screenshots/loginscreen.png" width="250"> | <img src="./frontend/screenshots/startscreen.png" width="250"> | <img src="./frontend/screenshots/kalender.png" width="250"> |
