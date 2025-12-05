@@ -33,7 +33,7 @@ Das Projekt kombiniert ein modernes **Vue-Frontend (Vite + Capacitor)** mit eine
 - Token-basierte Authentifizierung (Laravel Sanctum)  
 
 ### ✔ App-Funktionen
-- Mobile Optimierung durch Framework7  
+- Mobile Optimierung  
 - Offline-Unterstützung (Vite + PWA optional)  
 - Android-App via Capacitor  
 
