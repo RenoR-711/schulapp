@@ -1,5 +1,33 @@
-# Vue 3 + JavaScript + Vite
+# ISS Menü Plan – Monorepo
 
-This template should help get you started developing with Vue 3 and JavaScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Dieses Repository enthält:
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+- **frontend/** – Mobile App (Vue 3, Vite, Capacitor)
+- **backend/** – Laravel API
+
+## Installation
+
+### Backend installieren
+cd backend
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --seed
+php artisan serve
+
+### Frontend installieren
+cd frontend
+npm install
+npm run dev
+
+## Build der App (Android/iOS)
+cd frontend
+npx cap sync
+npx cap open android   # oder ios
+
+# ISS Menü Plan – Screenshot
+
+![Loginscreen](./frontend/screenshots/loginscreen.png)
+![Startscreen](./frontend/screenshots/startscreen.png)
+![Kalender](./frontend/screenshots/kalender.png)
+

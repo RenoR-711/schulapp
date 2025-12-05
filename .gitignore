@@ -1,24 +1,71 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+# ============================
+#   GLOBAL / SYSTEM
+# ============================
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+Thumbs.db
+.idea/
+.vscode/
+
+# ============================
+#   FRONTEND (Vue + Vite + Capacitor)
+# ============================
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/.vite/
+frontend/android/
+frontend/ios/
+frontend/www/
+
+# Env
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+
+# Logs
+frontend/*.log
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/pnpm-debug.log*
+
+# ============================
+#   BACKEND (Laravel)
+# ============================
+backend/vendor/
+backend/node_modules/
+backend/public/storage/
+backend/storage/*.key
+backend/storage/logs/*.log
+
+# Laravel cache
+backend/bootstrap/cache/*
+!backend/bootstrap/cache/.gitignore
+
+# Env
+backend/.env
+backend/.env.*
+!backend/.env.example
+
+# Logs
+backend/*.log
+
+# Composer
+backend/composer.phar
+
+# PHPUnit
+backend/.phpunit.result.cache
+backend/phpunit.xml.cache
+
+# ============================
+#   DATABASE FILES
+# ============================
+backend/*.sql
+backend/*.sqlite
+*.sql
+*.sqlite
+
+# ============================
+#   OS GENERATED
+# ============================
+*.swp
+*.tmp
