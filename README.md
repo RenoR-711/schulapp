@@ -5,9 +5,24 @@
 Mobile Schul-App zur Essensbestellung, Wochenplanung und Verwaltung.  
 Das Projekt kombiniert ein modernes **Vue-Frontend (Vite + Capacitor)** mit einem **Laravel-Backend** – alles in einem **Monorepo**.
 
-> ⚠️ **Hinweis:**  
-> Dieses Projekt befindet sich noch in aktiver Entwicklung.  
-> Einige Bereiche sind noch nicht vollständig implementiert.
+## Hintergrund
+
+Dieses Projekt wurde ursprünglich mit **Apache Cordova** entwickelt und ist derzeit in einer umfassenden Modernisierung.  
+Ziel ist es, die bestehende Schul-App technisch zu aktualisieren und in eine moderne Architektur zu überführen.
+
+Die aktuelle Version nutzt nun:
+- **Vue 3** und **Vite** für eine performante Web-App
+- **Capacitor** für moderne native Android/iOS Builds
+- **Laravel** als Backend mit einer strukturierten REST-API
+- eine **Monorepo-Struktur**, die Frontend und Backend sauber vereint
+
+## Projektstatus
+
+> ⚠️ **Privates Portfolio-Projekt – noch in Entwicklung**  
+> Dieses Projekt wird aktuell als persönliches Lern- und Referenzprojekt weiterentwickelt.  
+> Es ist nicht produktiv im Einsatz, sondern dient der Verbesserung meiner Fähigkeiten im Bereich  
+> moderner Web- und App-Entwicklung.  
+> Funktionen, Struktur und Code werden fortlaufend überarbeitet und optimiert.
 
 ---
 
