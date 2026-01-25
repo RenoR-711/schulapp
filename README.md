@@ -14,10 +14,7 @@ Ziel ist es, die bestehende Schul-App technisch zu aktualisieren und in eine mod
 ## Projektstatus
 
 > ⚠️ **Privates Portfolio-Projekt – noch in Entwicklung**  
-> Dieses Projekt wird aktuell als persönliches Lern- und Referenzprojekt weiterentwickelt.  
-> Es ist nicht produktiv im Einsatz, sondern dient der Verbesserung meiner Fähigkeiten im Bereich  
-> moderner Web- und App-Entwicklung.  
-> Funktionen, Struktur und Code werden fortlaufend überarbeitet und optimiert.
+> Portfolio-Projekt (Work in Progress): Fokus auf saubere Architektur, Refactoring und produktnahe Features.
 
 ---
 
@@ -26,6 +23,12 @@ Ziel ist es, die bestehende Schul-App technisch zu aktualisieren und in eine mod
 | Login-Screen der App                                               | Startscreen                                         |  Wochenplan mit Speiseübersicht                                              |
 | -------------------------------------------------------- | ------------------------------------------------------- | ---------------------------------------------------------- |
 | <img src="./frontend/screenshots/loginscreen.png" width="250"> | <img src="./frontend/screenshots/startscreen.png" width="250"> | <img src="./frontend/screenshots/kalender.png" width="250"> |
+
+-Auth / Rollen / Datenmodelle (Laravel + DB)
+
+-REST-API & Frontend-Anbindung
+
+-Wartbarkeit: Refactoring, Struktur, Doku
 
 ---
 
