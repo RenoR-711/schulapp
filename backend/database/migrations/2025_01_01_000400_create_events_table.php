@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -18,9 +19,9 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('tag_id')
-                  ->references('id')
-                  ->on('tage')
-                  ->onDelete('cascade');
+                ->references('id')
+                ->on('tage')
+                ->onDelete('cascade');
         });
     }
 

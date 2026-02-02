@@ -20,7 +20,7 @@ $this->call([
             MenueSeeder::class,
             EventsSeeder::class,
             VertretungsplanSeeder::class,
-            DetailKostenartenSeeder::class,
+            //DetailKostenartenSeeder::class,
             KalenderWochenSeeder::class,
 ]);
     }
