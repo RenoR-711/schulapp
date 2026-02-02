@@ -3,7 +3,7 @@
 
         <!-- HEADER -->
         <header class="header">
-            <h1 class="title">ISS Menü+</h1>
+            <h1 class="title">Schulportal+</h1>
         </header>
 
         <!-- CONTENT -->
